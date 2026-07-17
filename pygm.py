@@ -129,6 +129,10 @@ class Piece:
         board[new_position] = self
         board[self.position] = None
         self.position = new_position
+
+    def capture(position):
+        board[position] = None
+        
 # create pieces and place them on the board
 
 def create_pieces():
@@ -207,13 +211,8 @@ while run:
                     
                     else:
                         if already_selected_piece:
-                            if is_legal_move(selected_piece, selected_square, clicked_square, board, your_color=color_of_your_pieces):
-                                selected_piece.move(clicked_square)
-                                already_selected_piece = False
-                                print(f"Moved to {clicked_square}")
-                            else:
-                                print("Illegal move")
-                                already_selected_piece = False
+                            move(selected_piece, selected_square, clicked_square, board, your_color=color_of_your_pieces)
+                            already_selected_piece = False
     
     # update the display and set the frame rate (preset 144)
     pygame.display.flip()
