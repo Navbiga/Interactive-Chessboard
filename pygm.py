@@ -130,7 +130,7 @@ class Piece:
         board[self.position] = None
         self.position = new_position
 
-    def capture(position):
+    def capture(self, position):
         board[position] = None
         
 # create pieces and place them on the board
