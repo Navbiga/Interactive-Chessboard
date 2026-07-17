@@ -8,18 +8,22 @@ import pygame
 from functions import *
 
 
-# pygame start
+
+# pygame start and preset variables
 pygame.init()
 run = True
 framerate = 144
 color_of_your_pieces = "white"  # change this to "black" if you want to play as black
 color_of_other_pieces = "black"
 already_selected_piece = False
-# Screen dimensions
 
-screen_info = pygame.display.Info()
+
+
 
 # resolution check
+
+screen_info = pygame.display.Info() # screen info (resolution)
+
 if screen_info.current_w == 1920 and screen_info.current_h == 1080:
     print("You are using FULLHD resolution.")
     multiplier = 1
@@ -31,12 +35,14 @@ elif screen_info.current_w == 3840 and screen_info.current_h == 2160:
     multiplier = 2
 else:
     print(f"Your current resolution {screen_info.current_w}x{screen_info.current_h} is not supported. Please use FULLHD, QHD, or 4K resolution.")
-    run = False
 
+
+# Initialize the window
 SCREEN_WIDTH = screen_info.current_w
 SCREEN_HEIGHT = screen_info.current_h
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 
+# Load images
 chessboard = pygame.image.load("resources/chessboard.jpg")
 white_pawn = pygame.image.load("resources/white_pawn.png")
 black_pawn = pygame.image.load("resources/black_pawn.png")
@@ -66,7 +72,7 @@ white_bishop = pygame.transform.scale_by(white_bishop, multiplier * 0.8)
 black_knight = pygame.transform.scale_by(black_knight, multiplier * 0.8)
 white_knight = pygame.transform.scale_by(white_knight, multiplier * 0.8)
 
-# generate positions for each square on the chessboard
+# generate all positions for each square on the chessboard and the center of them for good snaping
 def generate_positions():
     '''This function generates the center of all positions on a chessboard (A1-H8) and returns them as a dictionary.'''
     positions = {}
@@ -80,11 +86,12 @@ def generate_positions():
             y = (SCREEN_HEIGHT // 2 - chessboard.get_height() // 2) + (8 - row) * square_size
             positions[letter] = (x + square_size // 2, y + square_size // 2)  # center of the square
     return positions
-
 positions = generate_positions()
+
+# IMPORTANT copies all names of posiotions and makes a dictonary in which every piece on the board is stored with the name of the position
 board = {pos: None for pos in positions.keys()}
 
-# information about the pieces
+# class for generatin moving terminating atd a piece
 class Piece:
     def __init__(self, color, position, piece_type):
         self.color = color
@@ -133,8 +140,7 @@ class Piece:
     def capture(self, position):
         board[position] = None
         
-# create pieces and place them on the board
-
+# create pieces and places them on the staring positions
 def create_pieces():
     '''This function creates and places the pieces on the starting positions of a chess game.'''
     # Pawns
@@ -168,6 +174,7 @@ def create_pieces():
     board["g8"] = Piece(color_of_other_pieces, "g8", "knight")
 create_pieces()
 
+# It estimates in which square was the left click registered with POSITIONS and outputs the name of the position for example 'a4'
 def get_clicked_square(click_x, click_y):
     '''This function returns the name of the square that was clicked on.'''
     for pos_name, (pos_x, pos_y) in positions.items():
@@ -180,28 +187,37 @@ def get_clicked_square(click_x, click_y):
 # Main loop
 while run:
 
-    #print images
+    # display all of the pieces with the chessboard
     screen.blit(chessboard, (SCREEN_WIDTH // 2 - chessboard.get_width() // 2, SCREEN_HEIGHT // 2 - chessboard.get_height() // 2))
-    
     for pos_name, piece in board.items():
         if piece is not None:
             piece.draw(screen)
 
 
 
-    #close window
+    # pygame event
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
 
+        # for terminating the program
+        if event.type == pygame.QUIT:
+            run = False 
+
+        # for registering clicks
         elif event.type == pygame.MOUSEBUTTONDOWN:
+
+            # for left clicks
             if event.button == 1:  # left mouse button
                 click_x, click_y = event.pos
+
+                # gets the square that was clicked
                 clicked_square = get_clicked_square(click_x, click_y)
                 
-                if clicked_square: 
+                if clicked_square:    # if it got a value
+
+                    # Check if there is a stored piece in this position if not this variable is None
                     target_piece = board.get(clicked_square) 
 
+                    # For selection of a figure. it checks if a figure is not alredy selected and if there is a piece.
                     if not already_selected_piece:
                         if target_piece is not None:
                             selected_piece = target_piece
@@ -209,9 +225,11 @@ while run:
                             already_selected_piece = True
                             print(f"Selected {selected_piece} on {selected_square}")
                     
+                    # If the piece is alredy selected it check if it is a legal move and inicialize it.
                     else:
                         if already_selected_piece:
-                            move(selected_piece, selected_square, clicked_square, board, your_color=color_of_your_pieces)
+                            if_not_legal = move(selected_piece, selected_square, clicked_square, board, your_color=color_of_your_pieces)
+
                             already_selected_piece = False
     
     # update the display and set the frame rate (preset 144)
@@ -219,4 +237,5 @@ while run:
     pygame.time.Clock().tick(framerate)
 
 
+# Terminates the program
 pygame.quit()
