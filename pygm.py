@@ -16,6 +16,7 @@ framerate = 144
 color_of_your_pieces = "white"  # change this to "black" if you want to play as black
 color_of_other_pieces = "black"
 already_selected_piece = False
+turn = "white"
 
 
 
@@ -228,8 +229,12 @@ while run:
                     # If the piece is alredy selected it check if it is a legal move and inicialize it.
                     else:
                         if already_selected_piece:
-                            if_not_legal = move(selected_piece, selected_square, clicked_square, board, your_color=color_of_your_pieces)
-
+                            if_not_legal = move(selected_piece, selected_square, clicked_square, board, turn)
+                            if if_not_legal != False:
+                                if turn == 'white':
+                                    turn = 'black'
+                                else:
+                                    turn = 'white'
                             already_selected_piece = False
     
     # update the display and set the frame rate (preset 144)
