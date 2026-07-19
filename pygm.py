@@ -117,9 +117,9 @@ white_knight_selected = pygame.transform.scale_by(white_knight_selected, multipl
 black_knight = pygame.transform.scale_by(black_knight, multiplier * 0.8)
 black_knight_selected = pygame.transform.scale_by(black_knight_selected, multiplier * 0.8)
 
-# -----------------------------------------------------------------------------
-# CENTRAL IMAGE DATABASE
-# -----------------------------------------------------------------------------
+
+
+# Central image database
 PIECE_IMAGES = {
     "white_pawn": white_pawn,
     "white_pawn_selected": white_pawn_selected,
@@ -191,6 +191,13 @@ class Piece:
 
     def capture(self, position):
         board[position] = None
+
+    def highlight(self):
+        self.image = PIECE_IMAGES[self.color + '_' + self.piece + '_selected']
+    
+    def unhighlight(self):
+        self.image = PIECE_IMAGES[self.color + '_' + self.piece]
+
         
 # create pieces and places them on the staring positions
 def create_pieces():
@@ -272,12 +279,11 @@ while run:
 
                     # For selection of a figure. it checks if a figure is not alredy selected and if there is a piece.
                     if not already_selected_piece:
-                        if target_piece is not None:
+                        if target_piece is not None and target_piece.color == turn:
                             selected_piece = target_piece
                             selected_square = clicked_square
-                            
-                            # TADY: Řádek je zpět v původním stavu, připraven na tvou logiku
-                            target_piece.image = target_piece.image 
+
+                            target_piece.highlight()
                             
                             already_selected_piece = True
                             print(f"Selected {selected_piece} on {selected_square}")
@@ -291,6 +297,7 @@ while run:
                                     turn = 'black'
                                 else:
                                     turn = 'white'
+                            selected_piece.unhighlight()
                             already_selected_piece = False
     
     # update the display and set the frame rate (preset 144)
