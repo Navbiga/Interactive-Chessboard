@@ -55,6 +55,24 @@ def move(piece, square, target_square, board, turn):
                 return True
                 
         # Check if the pawn didnt promote
+    
+
+    # Knight Movement
+    elif piece.piece == 'knight':
+
+            
         
-        
+        # two rows up and  column
+        if abs(int(square[1]) - int(target_square[1])) == 2 and abs(ord(square[0]) - ord(target_square[0])) == 1:
+            if board[target_square] is not None:
+                piece.capture(target_square)
+            piece.move(target_square)
+            return True
+
+        if abs(int(square[1]) - int(target_square[1])) == 1 and abs(ord(square[0]) - ord(target_square[0])) == 2:
+            if board[target_square] is not None:
+                piece.capture(target_square)
+            piece.move(target_square)
+            return True
+
     return False
