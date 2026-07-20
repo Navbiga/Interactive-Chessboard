@@ -165,5 +165,91 @@ def move(piece, square, target_square, board, turn):
                 return True
 
     
+
+    # The Queen Just rook and a bishop together nice to slack of right?
+    elif piece.piece == 'queen':
+
+        jump_check = True
+
+        # Rook part
+        # Logic and the same row
+        if square[1] == target_square[1]:
+
+            # Make a variable suitible for the range() function
+            start_ascii = min(ord(square[0]), ord(target_square[0]))
+            end_ascii = max(ord(square[0]), ord(target_square[0]))
+
+            for current_col in range(start_ascii + 1, end_ascii):
+                if jump_check and board[chr(current_col) + square[1]] is None:
+                    jump_check = True
+                else:
+                    jump_check = False
+                    return False
+
+            if jump_check:
+                # Success no obstacles in the way
+                if board[target_square] is not None:
+                    piece.capture(target_square)
+                piece.move(target_square)
+                return True
+
+
+        # Logic in the same collum SO MUCH EASIER AHH
+        elif square[0] == target_square[0]:
+
+            # numbers suitable for range()
+            start_int = min(int(square[1]), int(target_square[1]))
+            end_int = max(int(square[1]), int(target_square[1]))
+
+            for current_row in range(start_int + 1, end_int):
+                if jump_check and board[square[0] + str(current_row)] is None:
+                    jump_check = True
+                else:
+                    jump_check = False
+                    return False
+            
+            if jump_check:    
+                # Success no obstacles in the way
+                if board[target_square] is not None:
+                    piece.capture(target_square)
+                piece.move(target_square)
+                return True
+
+        # Bishop part
+
+        # Check if its along a diagonal
+        if abs(int(square[1]) - int(target_square[1])) == abs(ord(square[0]) - ord(target_square[0])):
+            
+            # how many squares to check if the piece is not jumping over other piece
+            steps = abs(int(square[1]) - int(target_square[1]))
+
+            # checking all squares
+            for times in range(1, steps):
+                
+                # selection of a letter
+                if ord(square[0]) < ord(target_square[0]):
+                    letter = chr(ord(square[0]) + times) 
+                else:
+                    letter = chr(ord(square[0]) - times)  
+
+                # selection of a nmber
+                if int(square[1]) < int(target_square[1]):
+                    row_num = int(square[1]) + times      
+                else:
+                    row_num = int(square[1]) - times      
+
+                # checking if the posiotion (letter + number) is None ==> no piece is there
+                check_pos = letter + str(row_num)
+                if board[check_pos] is not None:
+                    jump_check = False
+                    return False
+
+            # if i turn out that no piece is obstruction the vision proceed with the move
+            if jump_check:
+                if board[target_square] is not None:
+                    piece.capture(target_square)
+                piece.move(target_square)
+                return True
+
     # if nothing worked out the move is illegal
     return False
