@@ -91,7 +91,7 @@ black_pawn_selected = pygame.transform.scale_by(black_pawn_selected, multiplier)
 white_king = pygame.transform.scale_by(white_king, multiplier)
 white_king_selected = pygame.transform.scale_by(white_king_selected, multiplier)
 black_king = pygame.transform.scale_by(black_king, multiplier) 
-white_king_selected = pygame.transform.scale_by(black_king_selected, multiplier) 
+black_king_selected = pygame.transform.scale_by(black_king_selected, multiplier) 
 
 # Scale Queens
 white_queen = pygame.transform.scale_by(white_queen, multiplier)
