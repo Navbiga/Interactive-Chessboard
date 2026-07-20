@@ -82,40 +82,40 @@ black_knight_selected = pygame.image.load("resources/black_knight_selected.png")
 chessboard = pygame.transform.scale_by(chessboard, multiplier)
 
 # Scale Pawns
-white_pawn = pygame.transform.scale_by(white_pawn, multiplier * 0.8)
-white_pawn_selected = pygame.transform.scale_by(white_pawn_selected, multiplier * 0.8)
-black_pawn = pygame.transform.scale_by(black_pawn, multiplier * 0.8)
-black_pawn_selected = pygame.transform.scale_by(black_pawn_selected, multiplier * 0.8)
+white_pawn = pygame.transform.scale_by(white_pawn, multiplier)
+white_pawn_selected = pygame.transform.scale_by(white_pawn_selected, multiplier)
+black_pawn = pygame.transform.scale_by(black_pawn, multiplier)
+black_pawn_selected = pygame.transform.scale_by(black_pawn_selected, multiplier)
 
 # Scale Kings
-white_king = pygame.transform.scale_by(white_king, multiplier * 1.2)
-white_king_selected = pygame.transform.scale_by(white_king_selected, multiplier * 1.2)
-black_king = pygame.transform.scale_by(black_king, multiplier * 1.2) 
-white_king_selected = pygame.transform.scale_by(black_king_selected, multiplier * 1.2) 
+white_king = pygame.transform.scale_by(white_king, multiplier)
+white_king_selected = pygame.transform.scale_by(white_king_selected, multiplier)
+black_king = pygame.transform.scale_by(black_king, multiplier) 
+white_king_selected = pygame.transform.scale_by(black_king_selected, multiplier) 
 
 # Scale Queens
-white_queen = pygame.transform.scale_by(white_queen, multiplier * 0.85)
-white_queen_selected = pygame.transform.scale_by(white_queen_selected, multiplier * 0.85)
-black_queen = pygame.transform.scale_by(black_queen, multiplier * 0.85)
-black_queen_selected = pygame.transform.scale_by(black_queen_selected, multiplier * 0.85)
+white_queen = pygame.transform.scale_by(white_queen, multiplier)
+white_queen_selected = pygame.transform.scale_by(white_queen_selected, multiplier)
+black_queen = pygame.transform.scale_by(black_queen, multiplier)
+black_queen_selected = pygame.transform.scale_by(black_queen_selected, multiplier)
 
 # Scale Rooks
-white_rook = pygame.transform.scale_by(white_rook, multiplier * 0.7)
-white_rook_selected = pygame.transform.scale_by(white_rook_selected, multiplier * 0.7)
-black_rook = pygame.transform.scale_by(black_rook, multiplier * 0.7)
-black_rook_selected = pygame.transform.scale_by(black_rook_selected, multiplier * 0.7)
+white_rook = pygame.transform.scale_by(white_rook, multiplier)
+white_rook_selected = pygame.transform.scale_by(white_rook_selected, multiplier)
+black_rook = pygame.transform.scale_by(black_rook, multiplier)
+black_rook_selected = pygame.transform.scale_by(black_rook_selected, multiplier)
 
 # Scale Bishops
-white_bishop = pygame.transform.scale_by(white_bishop, multiplier * 0.8)
-white_bishop_selected = pygame.transform.scale_by(white_bishop_selected, multiplier * 0.8)
-black_bishop = pygame.transform.scale_by(black_bishop, multiplier * 0.8)
-black_bishop_selected = pygame.transform.scale_by(black_bishop_selected, multiplier * 0.8)
+white_bishop = pygame.transform.scale_by(white_bishop, multiplier)
+white_bishop_selected = pygame.transform.scale_by(white_bishop_selected, multiplier)
+black_bishop = pygame.transform.scale_by(black_bishop, multiplier)
+black_bishop_selected = pygame.transform.scale_by(black_bishop_selected, multiplier)
 
 # Scale Knights
-white_knight = pygame.transform.scale_by(white_knight, multiplier * 0.8)
-white_knight_selected = pygame.transform.scale_by(white_knight_selected, multiplier * 0.8)
-black_knight = pygame.transform.scale_by(black_knight, multiplier * 0.8)
-black_knight_selected = pygame.transform.scale_by(black_knight_selected, multiplier * 0.8)
+white_knight = pygame.transform.scale_by(white_knight, multiplier)
+white_knight_selected = pygame.transform.scale_by(white_knight_selected, multiplier)
+black_knight = pygame.transform.scale_by(black_knight, multiplier)
+black_knight_selected = pygame.transform.scale_by(black_knight_selected, multiplier)
 
 
 
