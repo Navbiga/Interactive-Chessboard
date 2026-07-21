@@ -1,0 +1,18 @@
+This is a general text file of what i am planing to add next
+
+1. make promotion work. The pixel art will be just a 4square long selection window that pops up. must work for both 
+colors and when i public this to PyPI i need to optimaze it if the user want to make black to play with something like stock fish.
+what im thinking of is making a function that cna make the promotion window optional for white or black and a function that
+promotes a pawn automaticly to the piece you set it too
+
+2. make casteling work
+
+3. make en passant possible
+
+4. make a right click for highlighting like chess.com
+
+5. Organize your code so everyone can read it without a headache
+
+6. make the resources look profestion / even making more variants of them
+
+7. if everithing is well done and i am happy with the result public it to PyPI

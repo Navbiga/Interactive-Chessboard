@@ -5,15 +5,14 @@
 
 
 
-
-def move(piece, square, target_square, board, turn):
+def move(piece, square, target_square, board, turn, check_for_chess=True):
     '''This function returns false statement if move is not legal otherwise it does the move'''
 
-    if turn == 'white':
-        direction = -1
-    else:
-        direction = 1
+    geometric_move = False
+    direction = -1 if turn == 'white' else 1
+    not_turn = 'white' if turn == 'black' else 'black'
 
+    
     # Check if piece color matches the color of the playing player
     if piece.color != turn:
         return False
@@ -22,9 +21,9 @@ def move(piece, square, target_square, board, turn):
     if board[target_square] is not None:
         if board[target_square].color == turn:
             return False
-        
+
+
     # Pawn move logic
-    
     if piece.piece == "pawn":
 
         # Logic in the same file
@@ -32,31 +31,23 @@ def move(piece, square, target_square, board, turn):
             # check for double move from starting position
             if turn == 'white':
                 if square[1] == "2" and target_square[1] == "4" and board[target_square] is None and board[square[0] + "3"] is None:
-                    piece.move(target_square)
-                    return True
+                    geometric_move = True
             else:
                 if square[1] == "7" and target_square[1] == "5" and board[target_square] is None and board[square[0] + "6"] is None:
-                    piece.move(target_square)
-                    return True
+                    geometric_move = True
             
             #check for single move forward
             if int(square[1]) - int(target_square[1]) == direction and board[target_square] is None:
-                piece.move(target_square)
-                return True
+                geometric_move = True
         
         # Capture logic
         elif abs(ord(square[0]) - ord(target_square[0])) == 1 and int(square[1]) - int(target_square[1]) == direction:
             # check for diagonal capture
             if board[target_square] is not None and board[target_square].color != piece.color:
-                if target_square is not None:
-                    print(target_square)
-                    piece.capture(target_square)
-                piece.move(target_square)
-                return True
+                geometric_move = True
                 
         # Check if the pawn didnt promote
 
-        return False # if nothing works the move is not legal
 
     # Knight Movement
     elif piece.piece == 'knight':
@@ -64,21 +55,15 @@ def move(piece, square, target_square, board, turn):
         
         # two rows up and  column
         if abs(int(square[1]) - int(target_square[1])) == 2 and abs(ord(square[0]) - ord(target_square[0])) == 1:
-            if board[target_square] is not None:
-                piece.capture(target_square)
-            piece.move(target_square)
-            return True
+            geometric_move = True
 
         # two collums and one row
         if abs(int(square[1]) - int(target_square[1])) == 1 and abs(ord(square[0]) - ord(target_square[0])) == 2:
-            if board[target_square] is not None:
-                piece.capture(target_square)
-            piece.move(target_square)
-            return True
+            geometric_move = True
 
 
     
-    # Rook Movement
+    # THE ROOOOOOOOOOOK
     elif piece.piece == 'rook':
         jump_check = True
 
@@ -98,10 +83,7 @@ def move(piece, square, target_square, board, turn):
 
             if jump_check:
                 # Success no obstacles in the way
-                if board[target_square] is not None:
-                    piece.capture(target_square)
-                piece.move(target_square)
-                return True
+                geometric_move = True
 
 
         # Logic in the same collum SO MUCH EASIER AHH
@@ -120,10 +102,7 @@ def move(piece, square, target_square, board, turn):
             
             if jump_check:    
                 # Success no obstacles in the way
-                if board[target_square] is not None:
-                    piece.capture(target_square)
-                piece.move(target_square)
-                return True
+                geometric_move = True
         
 
     # Bishop Movement
@@ -159,10 +138,7 @@ def move(piece, square, target_square, board, turn):
 
             # if i turn out that no piece is obstruction the vision proceed with the move
             if jump_check:
-                if board[target_square] is not None:
-                    piece.capture(target_square)
-                piece.move(target_square)
-                return True
+                geometric_move = True
 
     
 
@@ -171,7 +147,7 @@ def move(piece, square, target_square, board, turn):
 
         jump_check = True
 
-        # Rook part
+        # Rook Part
         # Logic and the same row
         if square[1] == target_square[1]:
 
@@ -188,10 +164,7 @@ def move(piece, square, target_square, board, turn):
 
             if jump_check:
                 # Success no obstacles in the way
-                if board[target_square] is not None:
-                    piece.capture(target_square)
-                piece.move(target_square)
-                return True
+                geometric_move = True
 
 
         # Logic in the same collum SO MUCH EASIER AHH
@@ -210,12 +183,9 @@ def move(piece, square, target_square, board, turn):
             
             if jump_check:    
                 # Success no obstacles in the way
-                if board[target_square] is not None:
-                    piece.capture(target_square)
-                piece.move(target_square)
-                return True
+                geometric_move = True
 
-        # Bishop part
+        # bishop part 
 
         # Check if its along a diagonal
         if abs(int(square[1]) - int(target_square[1])) == abs(ord(square[0]) - ord(target_square[0])):
@@ -246,10 +216,77 @@ def move(piece, square, target_square, board, turn):
 
             # if i turn out that no piece is obstruction the vision proceed with the move
             if jump_check:
-                if board[target_square] is not None:
-                    piece.capture(target_square)
-                piece.move(target_square)
-                return True
+                geometric_move = True
 
-    # if nothing worked out the move is illegal
+    # And finaly the king    
+    elif piece.piece == 'king':
+        row_diff = abs(int(square[1]) - int(target_square[1]))
+        col_diff = abs(ord(square[0]) - ord(target_square[0]))
+
+        if row_diff <= 1 and col_diff <=1 and (row_diff > 0 or col_diff > 0):
+            geometric_move = True
+
+
+    # If it passed the geometricly acurate move it moves on to the king safety check
+    if geometric_move == True:
+
+        # This prevents for is_check() to infinitly move
+        if not check_for_chess:
+            return True
+        
+        board_copy = board.copy()
+        board_copy[target_square] = board_copy[square]
+        board_copy[square] = None
+        if is_check(turn, board_copy):
+            return False
+        else:
+            return True
+    else:
+        return False
+
+
+
+def all_legal_moves(board, turn):
+
+    '''This move tells the user how many legal moves there is for a playing player'''
+    # the color of not playing player
+    not_turn = 'white' if turn == 'black' else 'black'
+    moves = 0
+    for pos, piece in board.items():
+        if piece is not None and piece.color == turn:
+            for try_pos in board:
+                if move(piece, pos, try_pos, board, turn):
+                    moves +=1
+
+    return moves
+
+def is_check(turn, board):
+    '''Checks if the playing player is experiencing a check'''
+
+    king_pos = None
+    # get kings position
+    for position, piece in board.items():
+        if piece is not None:
+            if piece.piece == 'king' and piece.color == turn:
+                king_pos = position
+                break
+
+    # if somehow no king existed then who should be in check? ==> False
+    if not king_pos:
+        return False
+    
+    opponent_turn = 'white' if turn == 'black' else 'black'
+
+    # Loops throught all of the not playing players pieces and checks if it has a legal move to take his king if yes ==> check
+    for pos, piece in board.items():
+        if piece is not None and piece.color == opponent_turn:
+
+            # Check for ... c h e c k       hahahhahaa
+            check = move(piece, pos, king_pos, board, opponent_turn, False)
+
+            if check:
+                return True
+    
+    # if the for loop doesnt find a check ==> no check
     return False
+    

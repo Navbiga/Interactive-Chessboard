@@ -292,11 +292,16 @@ while run:
                     else:
                         if already_selected_piece:
                             if_not_legal = move(selected_piece, selected_square, clicked_square, board, turn)
+
                             if if_not_legal != False:
-                                if turn == 'white':
+                                if turn ==  'white':
                                     turn = 'black'
+                                    selected_piece.move(clicked_square)
                                 else:
                                     turn = 'white'
+                                    selected_piece.move(clicked_square)
+
+                            
                             selected_piece.unhighlight()
                             already_selected_piece = False
     
