@@ -1,0 +1,6 @@
+# Asset Credits
+
+- **Pieces & Boards:** 
+  - Lichess assets (CC BY-SA 4.0 / GPL) by [Lichess.org](https://lichess.org)
+  - Hollowleaf piece set by Hollowleaf
+  - And finaly the 1% MEEEE

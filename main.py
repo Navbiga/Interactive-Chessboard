@@ -42,8 +42,8 @@ pygame.display.set_icon(icon)
 
 
 # Preset style
-chessboard_style = 'green'
-pieces_style = 'neo'
+chessboard_style = 'blue'
+pieces_style = 'anime'
 
 # board and square size preset
 square_size = int(100 * multiplier)
