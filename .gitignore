@@ -1,0 +1,9 @@
+# Just some pillow scripts that helped and future my OWN piece set
+my_resources/
+
+# Why would you need it
+__pycache__/
+*.pyc
+
+# because of the licence i cant share
+resources/chess.com/
