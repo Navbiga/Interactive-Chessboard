@@ -12,9 +12,10 @@ pygame.init()
 run = True
 framerate = 144
 your_color = "white"  # change this to "black" if you want to play as black
-
+promotion_piece = 'queen' # this is the preset
 already_selected_piece = False
 turn = "white"
+game_state = 'playing'
 
 # resolution check
 screen_info = pygame.display.Info() # screen info (resolution)
@@ -32,140 +33,61 @@ else:
     print(f"Your current resolution {screen_info.current_w}x{screen_info.current_h} is not supported. Please use FULLHD, QHD, or 4K resolution.")
 
 # Initialize the window
-SCREEN_WIDTH = screen_info.current_w
-SCREEN_HEIGHT = screen_info.current_h
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+SCREEN_WIDTH = 800 * multiplier
+SCREEN_HEIGHT = 800 * multiplier    
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Chessboard")
-icon = pygame.image.load("resources/white_pawn.png")
+icon = pygame.image.load("resources/icon.png")
 pygame.display.set_icon(icon)
 
-# Image loading
-chessboard = pygame.image.load("resources/chessboard.png")
 
-# Pawns
-white_pawn = pygame.image.load("resources/white_pawn.png")
-white_pawn_selected = pygame.image.load("resources/white_pawn_selected.png")
-black_pawn = pygame.image.load("resources/black_pawn.png")
-black_pawn_selected = pygame.image.load("resources/black_pawn_selected.png")
+# Preset style
+chessboard_style = 'green'
+pieces_style = 'neo'
 
-# Kings
-white_king = pygame.image.load("resources/white_king.png")
-white_king_selected = pygame.image.load("resources/white_king_selected.png")
-black_king = pygame.image.load("resources/black_king.png")
-black_king_selected = pygame.image.load("resources/black_king_selected.png")
+# board and square size preset
+square_size = int(100 * multiplier)
+board_size = square_size * 8
 
-# Queens
-white_queen = pygame.image.load("resources/white_queen.png")
-white_queen_selected = pygame.image.load("resources/white_queen_selected.png")
-black_queen = pygame.image.load("resources/black_queen.png")
-black_queen_selected = pygame.image.load("resources/black_queen_selected.png")
+# Chessboard
+chessboard = pygame.image.load(f"resources/boards/{chessboard_style}.png").convert_alpha()
+chessboard = pygame.transform.smoothscale(chessboard, (board_size, board_size))
 
-# Rooks
-white_rook = pygame.image.load("resources/white_rook.png")
-white_rook_selected = pygame.image.load("resources/white_rook_selected.png")
-black_rook = pygame.image.load("resources/black_rook.png")
-black_rook_selected = pygame.image.load("resources/black_rook_selected.png")
-
-# Bishops
-white_bishop = pygame.image.load("resources/white_bishop.png")
-white_bishop_selected = pygame.image.load("resources/white_bishop_selected.png")
-black_bishop = pygame.image.load("resources/black_bishop.png")
-black_bishop_selected = pygame.image.load("resources/black_bishop_selected.png")
-
-# Knights
-white_knight = pygame.image.load("resources/white_knight.png")
-white_knight_selected = pygame.image.load("resources/white_knight_selected.png")
-black_knight = pygame.image.load("resources/black_knight.png")
-black_knight_selected = pygame.image.load("resources/black_knight_selected.png")
-
-# Image scaling
-chessboard = pygame.transform.scale_by(chessboard, multiplier)
-
-# Scale Pawns
-white_pawn = pygame.transform.scale_by(white_pawn, multiplier)
-white_pawn_selected = pygame.transform.scale_by(white_pawn_selected, multiplier)
-black_pawn = pygame.transform.scale_by(black_pawn, multiplier)
-black_pawn_selected = pygame.transform.scale_by(black_pawn_selected, multiplier)
-
-# Scale Kings
-white_king = pygame.transform.scale_by(white_king, multiplier)
-white_king_selected = pygame.transform.scale_by(white_king_selected, multiplier)
-black_king = pygame.transform.scale_by(black_king, multiplier) 
-black_king_selected = pygame.transform.scale_by(black_king_selected, multiplier) 
-
-# Scale Queens
-white_queen = pygame.transform.scale_by(white_queen, multiplier)
-white_queen_selected = pygame.transform.scale_by(white_queen_selected, multiplier)
-black_queen = pygame.transform.scale_by(black_queen, multiplier)
-black_queen_selected = pygame.transform.scale_by(black_queen_selected, multiplier)
-
-# Scale Rooks
-white_rook = pygame.transform.scale_by(white_rook, multiplier)
-white_rook_selected = pygame.transform.scale_by(white_rook_selected, multiplier)
-black_rook = pygame.transform.scale_by(black_rook, multiplier)
-black_rook_selected = pygame.transform.scale_by(black_rook_selected, multiplier)
-
-# Scale Bishops
-white_bishop = pygame.transform.scale_by(white_bishop, multiplier)
-white_bishop_selected = pygame.transform.scale_by(white_bishop_selected, multiplier)
-black_bishop = pygame.transform.scale_by(black_bishop, multiplier)
-black_bishop_selected = pygame.transform.scale_by(black_bishop_selected, multiplier)
-
-# Scale Knights
-white_knight = pygame.transform.scale_by(white_knight, multiplier)
-white_knight_selected = pygame.transform.scale_by(white_knight_selected, multiplier)
-black_knight = pygame.transform.scale_by(black_knight, multiplier)
-black_knight_selected = pygame.transform.scale_by(black_knight_selected, multiplier)
-
-
-
-# Central image database
-PIECE_IMAGES = {
-    "white_pawn": white_pawn,
-    "white_pawn_selected": white_pawn_selected,
-    "black_pawn": black_pawn,
-    "black_pawn_selected": black_pawn_selected,
-    
-    "white_king": white_king,
-    "white_king_selected": white_king_selected,
-    "black_king": black_king,
-    "black_king_selected": black_king_selected,
-    
-    "white_queen": white_queen,
-    "white_queen_selected": white_queen_selected,
-    "black_queen": black_queen,
-    "black_queen_selected": black_queen_selected,
-    
-    "white_rook": white_rook,
-    "white_rook_selected": white_rook_selected,
-    "black_rook": black_rook,
-    "black_rook_selected": black_rook_selected,
-    
-    "white_bishop": white_bishop,
-    "white_bishop_selected": white_bishop_selected,
-    "black_bishop": black_bishop,
-    "black_bishop_selected": black_bishop_selected,
-    
-    "white_knight": white_knight,
-    "white_knight_selected": white_knight_selected,
-    "black_knight": black_knight,
-    "black_knight_selected": black_knight_selected,
+# pieces
+piece_files = {
+    "white_pawn": "wp.png",   "black_pawn": "bp.png",
+    "white_king": "wk.png",   "black_king": "bk.png",
+    "white_queen": "wq.png",  "black_queen": "bq.png",
+    "white_rook": "wr.png",   "black_rook": "br.png",
+    "white_bishop": "wb.png", "black_bishop": "bb.png",
+    "white_knight": "wn.png", "black_knight": "bn.png",
 }
 
-# generate all positions for each square on the chessboard and the center of them for good snaping
+# load and smoothscale of pieces
+PIECE_IMAGES = {}
+
+for piece_key, filename in piece_files.items():
+    raw_img = pygame.image.load(f"resources/pieces/{pieces_style}/{filename}").convert_alpha()
+    PIECE_IMAGES[piece_key] = pygame.transform.smoothscale(raw_img, (square_size, square_size))
+
+
+
+
+# generate all positions for each square on the chessboard
+# BEWARE ONLY WORKS IF THE CHESSBOARD IS IN THE CENTER OF THE SCREEN
+
 def generate_positions():
-    '''This function generates the center of all positions on a chessboard (A1-H8) and returns them as a dictionary.'''
+    '''This function generates the start of a square (right up corner) and return a dictionary in this syntax "a4": (x, y)'''
     positions = {}
-    square_size = 100 * multiplier
-    # generate positions for each square on the chessboard
     for row in range(1, 9):
         for col, times in zip("abcdefgh", range(8)):
             
             letter = col + str(row)
-            x = (SCREEN_WIDTH // 2 - 400 * multiplier) + times * square_size
+            x = (SCREEN_WIDTH // 2 - 4 * square_size) + times * square_size
             y = (SCREEN_HEIGHT // 2 - 400 * multiplier) + (8 - row) * square_size
-            positions[letter] = (x + square_size // 2, y + square_size // 2)  # center of the square
+            positions[letter] = (x, y)
     return positions
+
 positions = generate_positions()
 
 # IMPORTANT copies all names of posiotions and makes a dictonary in which every piece on the board is stored with the name of the position
@@ -177,12 +99,11 @@ class Piece:
         self.color = color
         self.position = position
         self.piece = piece_type
-        
         self.image = PIECE_IMAGES[f"{self.color}_{self.piece}"]
 
     def draw(self, screen):
         x, y = positions[self.position]
-        screen.blit(self.image, (x - self.image.get_width() // 2, y - self.image.get_height() // 2))
+        screen.blit(self.image, (x, y))
 
     def move(self, new_position):
         board[new_position] = self
@@ -192,11 +113,11 @@ class Piece:
     def capture(self, position):
         board[position] = None
 
-    def highlight(self):
-        self.image = PIECE_IMAGES[self.color + '_' + self.piece + '_selected']
-    
-    def unhighlight(self):
-        self.image = PIECE_IMAGES[self.color + '_' + self.piece]
+
+    def promote(self, piece):
+        self.piece = piece
+        self.image = PIECE_IMAGES[f"{self.color}_{self.piece}"]
+
 
         
 # create pieces and places them on the staring positions
@@ -242,7 +163,7 @@ def get_clicked_square(click_x, click_y):
     '''This function returns the name of the square that was clicked on.'''
     for pos_name, (pos_x, pos_y) in positions.items():
         square_size = 100 * multiplier
-        if (pos_x - square_size // 2 <= click_x <= pos_x + square_size // 2) and (pos_y - square_size // 2 <= click_y <= pos_y + square_size // 2):
+        if (pos_x <= click_x <= pos_x + square_size) and (pos_y <= click_y <= pos_y + square_size):
             return pos_name
     return None
 
@@ -283,7 +204,6 @@ while run:
                             selected_piece = target_piece
                             selected_square = clicked_square
 
-                            target_piece.highlight()
                             
                             already_selected_piece = True
                             print(f"Selected {selected_piece} on {selected_square}")
@@ -296,13 +216,14 @@ while run:
                             if if_not_legal != False:
                                 if turn ==  'white':
                                     turn = 'black'
+                                    
                                     selected_piece.move(clicked_square)
                                 else:
                                     turn = 'white'
                                     selected_piece.move(clicked_square)
 
                             
-                            selected_piece.unhighlight()
+                            
                             already_selected_piece = False
     
     # update the display and set the frame rate (preset 144)
