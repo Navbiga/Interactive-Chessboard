@@ -5,7 +5,7 @@
 
 
 
-def move(piece, square, target_square, board, turn, check_for_chess=True):
+def check_move(piece, square, target_square, board, turn, check_for_chess=True):
     '''This function returns false statement if move is not legal otherwise it does the move'''
 
     geometric_move = False
@@ -255,7 +255,7 @@ def all_legal_moves(board, turn):
     for pos, piece in board.items():
         if piece is not None and piece.color == turn:
             for try_pos in board:
-                if move(piece, pos, try_pos, board, turn):
+                if check_move(piece, pos, try_pos, board, turn):
                     moves +=1
 
     return moves
@@ -282,11 +282,19 @@ def is_check(turn, board):
         if piece is not None and piece.color == opponent_turn:
 
             # Check for ... c h e c k       hahahhahaa
-            check = move(piece, pos, king_pos, board, opponent_turn, False)
+            check = check_move(piece, pos, king_pos, board, opponent_turn, False)
 
             if check:
                 return True
     
     # if the for loop doesnt find a check ==> no check
     return False
-    
+
+# It estimates in which square was the left click registered with POSITIONS and outputs the name of the position for example 'a4'
+def get_clicked_square(click_x, click_y, square_size, positions):
+    '''This function returns the name of the square that was clicked on.'''
+    for pos_name, (pos_x, pos_y) in positions.items():
+        if (pos_x <= click_x <= pos_x + square_size) and (pos_y <= click_y <= pos_y + square_size):
+            return pos_name
+        
+    return None

@@ -1,0 +1,60 @@
+
+board = Chessboard()
+
+
+
+# Will summon a pygame window. with the chessboard and pieces with preset style
+board.__init__()
+
+
+# sets the style and loads the images if nothing entered the base style will be selected. The init function loads this
+board.set_style(board_style, piece_style)
+
+board.set_color(your_color)
+
+# Makes that the players aren't changing turns if you want to control the other pieces with ai or smth else
+board.no_turns()
+
+# Switches the turn
+board.switch_turns()
+
+# Makes that no legal move can be played on the chessboard with left clicks
+board.freeze()
+
+board.unfreeze()
+
+# doesn't end the window when checkmate, but you cant do any move
+board.ignore_checkmate()
+
+
+board.update_board(board)
+
+board_state = board.get_board()
+
+board.crete_piece(color, type, position)
+
+board.delete_piece(position)
+
+# Note if there was a piese at the end_pos its GONE
+board.move_piece(start_pos, end_pos)
+
+board.edit_piece(position, color/type)
+
+board.delete piece
+# Game loop
+while run:
+    board.update
+    
+    if board.event == move:  # outputs the move that has been played (if it has been)	
+        board.get_last_move
+    if board.event == checkmate:
+	# Your Logic
+    if board.event == stalemate:
+        # Your logic
+
+
+    if move in not None:
+	# the users things
+
+    
+

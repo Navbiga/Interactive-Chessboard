@@ -2,5 +2,5 @@
 
 - **Pieces & Boards:** 
   - Lichess assets (CC BY-SA 4.0 / GPL) by [Lichess.org](https://lichess.org)
-  - Hollowleaf piece set by Hollowleaf ()
+  - Hollowleaf piece set by Hollowleaf(Toan Hoang)     https://github.com/HollowLeaf1981/ChessPieces
   - And finaly the 1% MEEEE
