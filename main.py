@@ -11,7 +11,7 @@ from config import Display, Theme, Highlight, GeneralConfig
 pygame.init()
 
 turn = 'white'
-is_selected = False
+
 your_color = 'white'
 
 
@@ -20,9 +20,17 @@ class Chessboard:
 
 
     def __init__(self):
+        self.right_click_drag = False
+        self.selected_piece = None
+        self.selected_square = None
+        self.left_click_drag = False
+        self.offset_piece_pos = None
+        self.offset_x = 0
+        self.offset_y = 0
         self.square_size = Display.SQUARE_SIZE
         self.board_size = Display.BOARD_SIZE
         self.is_frozen = False
+        self.is_selected = False
         self.turn = turn
         self.should_change_turns = GeneralConfig.CHANGE_TURNS
 
@@ -66,14 +74,14 @@ class Chessboard:
     def set_theme(self, board=None, piece=None):
         global PIECE_IMAGES
 
-        self.board_style = board if board else Theme.BOARD_STYLE
-        self.piece_style = piece if piece else Theme.PIECE_SET
+        self.board_style = board if board is not None else Theme.BOARD_STYLE
+        self.piece_style = piece if piece is not None else Theme.PIECE_SET
         try:
             self.image = chessboard = pygame.image.load(f"resources/boards/{self.board_style}.jpg")
         except:
             self.image = pygame.image.load(f"resources/boards/{self.board_style}.png").convert_alpha()
 
-        self.image = pygame.transform.smoothscale(chessboard, (self.board_size, self.board_size))
+        self.image = pygame.transform.smoothscale(self.image, (self.board_size, self.board_size))
 
         piece_files = {
             "white_pawn": "wp.png",   "black_pawn": "bp.png",
@@ -90,6 +98,13 @@ class Chessboard:
             raw_img = pygame.image.load(f"resources/pieces/{self.piece_style}/{filename}").convert_alpha()
             self.PIECE_IMAGES[piece_key] = pygame.transform.smoothscale(raw_img, (self.square_size, self.square_size))
 
+        try:
+            for key, value in self.board.items():
+                if value is not None:
+                    self.board[key].image = self.PIECE_IMAGES[f"{value.color}_{value.piece}"]
+        except:
+            print('nothing to be updated')
+
     def generate_board(self):
 
         positions = {}
@@ -103,6 +118,9 @@ class Chessboard:
 
         self.positions = positions
         self.board = {pos: None for pos in positions.keys()}
+        self.highlight_board = {pos: pygame.Surface((Display.SQUARE_SIZE, Display.SQUARE_SIZE)) for pos in positions.keys()}
+        for key in self.highlight_board:
+            self.highlight_board[key].set_alpha(0)
 
     def reset(self):
         for key in self.board:
@@ -146,10 +164,29 @@ class Chessboard:
         self.is_frozen = False
 
     def draw(self):
+        
+        self.screen.fill((0, 0, 0))
+
         self.screen.blit(self.image, (self.SCREEN_WIDTH / 2 - self.board_size / 2, self.SCREEN_HEIGHT / 2 - self.board_size / 2))
+
+        for key in self.highlight_board:
+            pos = self.positions[key]
+            self.screen.blit(self.highlight_board[key], pos)
+
         for pos_name, piece in self.board.items():
-            if piece is not None:
-                piece.draw(self.screen, self.positions)
+            if piece is not None and piece != self.selected_piece:
+                x, y = self.positions[pos_name]
+                    
+                piece.draw(self.screen, x, y)
+
+        if self.selected_piece is not None:
+            
+            x, y = self.positions[self.selected_piece.position]
+            if self.left_click_drag:
+                x, y = self.event_pos
+                x += self.offset_x - self.square_size / 2
+                y += self.offset_y - self.square_size / 2
+            self.selected_piece.draw(self.screen, x, y)
 
     def move_piece(self, start_pos, end_pos):
         piece = self.board[start_pos]
@@ -179,8 +216,10 @@ class Chessboard:
         else:
             print('ERROR: promote() - You can promote a blank square')
 
+    def get_last_move(self):
+        return self.last_move_info
+    
     def update(self):
-        global is_selected
 
         self.draw()
 
@@ -191,52 +230,151 @@ class Chessboard:
                 return 'quit'
 
             if not self.is_frozen:
+                
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        click_x, click_y = event.pos
-                        square = get_clicked_square(click_x, click_y, self.square_size, self.positions)
 
+
+                    click_x, click_y = event.pos
+                    square = get_clicked_square(click_x, click_y, self.square_size, self.positions)
+                    self.event_pos = event.pos
+
+                    if event.button == 3:
+
+                        self.right_click_drag = True
+
+                        if Highlight.RIGHT_CLICK_ENABLED:
+                            if self.highlight_board[square].get_at((0, 0)) == (0, 0, 0):
+                                self.highlight(square, Highlight.RIGHT_CLICK_COLOR, Highlight.RIGHT_CLICK_ALPHA, Highlight.RIGHT_CLICK_TYPE)
+                            elif self.highlight_board[square].get_at((0, 0)) == Highlight.RIGHT_CLICK_COLOR:
+                                self.unhighlight(square)
+
+                    if event.button == 1:
+
+                        self.left_click_drag = True
+                        
                         if square:
                             piece = self.board[square]
 
-                            if not is_selected and piece is not None and piece.color == self.turn:
-                                self.selected_piece = self.board[square]
+                            if piece is not None and self.is_selected == False:
                                 self.selected_square = square
-                                is_selected = True
+                                self.selected_piece = piece
+                                self.is_selected = True
+                                self.highlight(self.selected_square, Highlight.SELECTED_COLOR, Highlight.SELECTED_ALPHA, Highlight.SELECT_TYPE)
 
-                            elif is_selected:
+                            elif self.is_selected:
                                 is_legal = check_move(self.selected_piece, self.selected_square, square, self.board, self.turn)
 
                                 if is_legal:
                                     if self.should_change_turns:
                                         self.switch_turns()
+                                    capture = self.board[square]
                                     self.move_piece(self.selected_square, square)
-                                    is_selected = False
+                                    self.last_selected_square = self.selected_square
+                                    for key in self.highlight_board:
+                                        self.unhighlight(key)
+                                    self.unhighlight(self.selected_square)
+                                    self.is_selected = False
+                                    self.last_move_info = {"from": self.selected_square,
+                                                           "to": square,
+                                                           "piece": self.selected_piece.piece,
+                                                           'color': self.selected_piece.color,
+                                                           "captured": capture.piece if capture else None,
+                                                           "notation": f"{self.selected_square}-{square}"}
                                     return 'move'
 
-                                is_selected = False
+                                if self.board[square] is not None and self.board[square].color == self.turn:
+                                    self.highlight(square, Highlight.SELECTED_COLOR, Highlight.SELECTED_ALPHA, Highlight.SELECT_TYPE)
 
+                                    self.unhighlight(self.selected_square)
+                                    self.selected_square = square
+                                    self.selected_piece = self.board[square]
+                                else:
+                                    self.is_selected = False
+
+                if event.type == pygame.MOUSEMOTION:
+                    if event.buttons[0] == 1 and self.left_click_drag:
+                        if self.selected_piece is not None:
+
+                            start_pos = self.event_pos
+                            end_pos = event.pos
+                            self.offset_x = event.pos[0] - self.event_pos[0]
+                            self.offset_y = event.pos[1] - self.event_pos[1]
+                            self.offset_piece_pos = self.selected_piece.position
+
+                elif event.type == pygame.MOUSEBUTTONUP:
+
+                    piece = self.selected_piece
+                    start_pos = self.event_pos
+                    end_pos = event.pos
+                    start_square = get_clicked_square(start_pos[0], start_pos[1], self.square_size, self.positions)
+                    end_square = get_clicked_square(end_pos[0], end_pos[1], self.square_size, self.positions)
+
+                    
+                    if event.button == 1:  # Left mouse button
+                        if self.left_click_drag:
+                            if start_square == end_square:
+                                pass  # No movement, do nothing
+                            elif start_square and end_square and piece is not None and self.is_selected:
+
+                                is_legal = check_move(piece, start_square, end_square, self.board, self.turn)
+
+                                if is_legal:
+
+                                    if self.should_change_turns:
+                                        self.switch_turns()
+                                    capture = self.board[end_square]
+                                    self.move_piece(start_square, end_square)
+                                    self.last_selected_square = start_square
+                                    for key in self.highlight_board:
+                                        self.unhighlight(key)
+                                    self.unhighlight(start_square)
+                                    self.is_selected = False
+                                    self.last_move_info = {"from": start_square,
+                                                           "to": end_square,
+                                                           "piece": piece.piece,
+                                                           'color': piece.color,
+                                                           "captured": capture.piece if capture else None,
+                                                           "notation": f"{start_square}-{end_square}"}
+                                    return 'move'
+                                
+                            self.left_click_drag = False
+                    elif event.button == 3:  # Right mouse button
+
+
+                        self.right_click_drag = False
 
         pygame.display.flip()
         pygame.time.Clock().tick(Display.FPS)
         
+    def highlight(self, position, color, alpha, type):
 
+        raw_color = (color[0], color[1], color[2])
+        self.highlight_board[position].fill(raw_color)
+        self.highlight_board[position].set_alpha(alpha)
 
+    def unhighlight(self, position):
+
+        self.highlight_board[position].fill((0, 0, 0))
+        self.highlight_board[position].set_alpha(0)
+
+    def unhighlight_all(self):
+        for key in self.highlight_board:
+            self.highlight_board[key] = pygame.Surface((Display.SQUARE_SIZE, Display.SQUARE_SIZE))
 
 class Piece:
     def __init__(self, color, position, piece_type, PIECE_IMAGES):
         self.color = color
         self.position = position
         self.piece = piece_type
+        self.highlight = False
         self.image = PIECE_IMAGES[f"{self.color}_{self.piece}"]
 
-    def draw(self, screen, positions):
-        x, y = positions[self.position]
+    def draw(self, screen, x, y):
         screen.blit(self.image, (x, y))
 
 run = True
 board = Chessboard()    
-
+board.set_theme('maple', 'anarcandy')
 while run:
     event = board.update()
 
