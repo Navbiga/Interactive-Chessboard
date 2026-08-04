@@ -10,16 +10,20 @@ This is a general text file of what i am planing to add next
 
 5. make en passant possible
 
-6. Make a debug for the methods in functions
-
-7. Add more functions
-
-8. Organize your code so everyone can read it without a headache
-
-9. Optimize for maximum speed
-
 10.  Add my special chess piece set AND rename all the folders to lowercase
 
-11. if everithing is well done and i am happy with the result public it to PyPI
+7. Add checkmate and stalemate window 
 
-12. AI AND DATABAZE TIME!!! finaly i can do my main project
+8. Add more functions
+
+9. Add smooth movement and sound effects
+
+10. Make a debug for the methods in functions
+
+11. Organize your code so everyone can read it without a headache
+
+12. Optimize for maximum speed
+
+13. if everithing is well done and i am happy with the result public it to PyPI
+
+14. AI AND DATABAZE TIME!!! finaly i can do my main project
