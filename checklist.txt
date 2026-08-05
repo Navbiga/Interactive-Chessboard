@@ -1,7 +1,5 @@
 This is a general text file of what i am planing to add next
 
-1. Fix all the highlingting bugs even the selection is not working with the drag
-
 2. Make all highlight possible like chess.com 
 
 3. make promotion work
@@ -10,7 +8,8 @@ This is a general text file of what i am planing to add next
 
 5. make en passant possible
 
-10.  Add my special chess piece set AND rename all the folders to lowercase
+6.  Add my special chess piece set AND rename all the folders to lowercase. Also convert the config.py to a json file¨
+and add a function to permanently change it without doing it manualy
 
 7. Add checkmate and stalemate window 
 

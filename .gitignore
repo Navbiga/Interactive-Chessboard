@@ -3,3 +3,5 @@ my_resources/
 
 # Why would you need 
 __pycache__/
+
+resources/pieces/neo

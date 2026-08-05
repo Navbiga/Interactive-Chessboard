@@ -1,0 +1,37 @@
+
+if click:
+    if is selected:
+        if move is legal:
+            selected_highlights = (square, selected_square)
+            move piece
+            if switch turns is enabled:
+                switch turns
+        else:
+            if clicked on another piece:
+                select that piece
+                drag = True
+            else:
+                deselect
+    elif not is selected:
+        if clicked on a piece:
+            select that piece
+            left click drag is enabled
+
+if mouse_movement:
+    if drag:
+        offset the piece position based on mouse movement
+
+if mouse button up:
+    if left click:
+        if drag:
+            if start square == end square:
+                do nothing
+            elif move is legal:
+                move piece
+                if switch turns is enabled:
+                    switch turns
+            else:
+                do nothing
+        disable left click drag
+    elif right click:
+        disable right click drag

@@ -20,6 +20,8 @@ class Chessboard:
 
 
     def __init__(self):
+        self.past_highlights = []
+        self.selected_highlights = []
         self.right_click_drag = False
         self.selected_piece = None
         self.selected_square = None
@@ -220,77 +222,99 @@ class Chessboard:
         return self.last_move_info
     
     def update(self):
+        '''This is the main (game) loop of the chessboard, its this that updates the screen and the whole state'''
+        '''It handles all the pygame events and interaction, Throw this into a while loop or else you wont have a updated screen'''
 
+
+        # Draw the board with pieces and highlights
         self.draw()
+
+
+        # Cycles throught all of the pygame events and handles them accordingly
+        # this is where the interaction happens
 
         for event in pygame.event.get():
 
+            # Handle quitting the game (clicking the X button on the window or pressing Alt+F4)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 return 'quit'
 
+            # Handle key presses, this happens only when the chessboard in not frozen
             if not self.is_frozen:
-                
+
+                # Handle mouse button down events
                 if event.type == pygame.MOUSEBUTTONDOWN:
 
-
+                    # Gets position of the mouse click and converts it to a square on the board
                     click_x, click_y = event.pos
                     square = get_clicked_square(click_x, click_y, self.square_size, self.positions)
                     self.event_pos = event.pos
 
+                    # Right click
                     if event.button == 3:
 
                         self.right_click_drag = True
 
-                        if Highlight.RIGHT_CLICK_ENABLED:
-                            if self.highlight_board[square].get_at((0, 0)) == (0, 0, 0):
-                                self.highlight(square, Highlight.RIGHT_CLICK_COLOR, Highlight.RIGHT_CLICK_ALPHA, Highlight.RIGHT_CLICK_TYPE)
-                            elif self.highlight_board[square].get_at((0, 0)) == Highlight.RIGHT_CLICK_COLOR:
-                                self.unhighlight(square)
-
+                    # Left click - the main interaction
                     if event.button == 1:
 
-                        self.left_click_drag = True
-                        
                         if square:
+
                             piece = self.board[square]
 
                             if piece is not None and self.is_selected == False:
                                 self.selected_square = square
                                 self.selected_piece = piece
                                 self.is_selected = True
-                                self.highlight(self.selected_square, Highlight.SELECTED_COLOR, Highlight.SELECTED_ALPHA, Highlight.SELECT_TYPE)
+                                self.selected_highlights = [square]
+                                self.offset_x = 0
+                                self.offset_y = 0
+                                self.left_click_drag = True
 
                             elif self.is_selected:
-                                is_legal = check_move(self.selected_piece, self.selected_square, square, self.board, self.turn)
 
+                                is_legal = check_move(self.selected_piece, self.selected_square, square, self.board, self.turn)
                                 if is_legal:
+
                                     if self.should_change_turns:
                                         self.switch_turns()
-                                    capture = self.board[square]
+
+                                    self.past_highlights = []
+                                    self.past_highlights.append(self.selected_square)
+                                    self.past_highlights.append(square)
+
+                                    self.selected_highlights = []
+
+
                                     self.move_piece(self.selected_square, square)
-                                    self.last_selected_square = self.selected_square
-                                    for key in self.highlight_board:
-                                        self.unhighlight(key)
-                                    self.unhighlight(self.selected_square)
+
                                     self.is_selected = False
                                     self.last_move_info = {"from": self.selected_square,
                                                            "to": square,
                                                            "piece": self.selected_piece.piece,
                                                            'color': self.selected_piece.color,
-                                                           "captured": capture.piece if capture else None,
+                                                           "captured": piece.piece if piece else None,
                                                            "notation": f"{self.selected_square}-{square}"}
                                     return 'move'
 
-                                if self.board[square] is not None and self.board[square].color == self.turn:
-                                    self.highlight(square, Highlight.SELECTED_COLOR, Highlight.SELECTED_ALPHA, Highlight.SELECT_TYPE)
-
-                                    self.unhighlight(self.selected_square)
-                                    self.selected_square = square
-                                    self.selected_piece = self.board[square]
+                                elif self.board[square] is not None:
+                                    if piece == self.selected_piece:
+                                        self.selected_highlights = []
+                                        self.is_selected = False
+                                    else: 
+                                        self.left_click_drag = True
+                                        self.offset_x = 0
+                                        self.offset_y = 0
+                                        self.selected_highlights = [square]
+                                        self.selected_square = square
+                                        self.selected_piece = self.board[square]
                                 else:
+                                    self.selected_highlights = []
                                     self.is_selected = False
 
+
+                # Handle mouse motion events for dragging pieces
                 if event.type == pygame.MOUSEMOTION:
                     if event.buttons[0] == 1 and self.left_click_drag:
                         if self.selected_piece is not None:
@@ -301,48 +325,63 @@ class Chessboard:
                             self.offset_y = event.pos[1] - self.event_pos[1]
                             self.offset_piece_pos = self.selected_piece.position
 
-                elif event.type == pygame.MOUSEBUTTONUP:
+                # And lastly the mouse button up, this is where you move a drag piece
+                if event.type == pygame.MOUSEBUTTONUP:
 
+
+                    # again position info
                     piece = self.selected_piece
                     start_pos = self.event_pos
                     end_pos = event.pos
                     start_square = get_clicked_square(start_pos[0], start_pos[1], self.square_size, self.positions)
                     end_square = get_clicked_square(end_pos[0], end_pos[1], self.square_size, self.positions)
 
-                    
-                    if event.button == 1:  # Left mouse button
+
+                    # Left mouse button
+                    if event.button == 1:  
+
                         if self.left_click_drag:
+
+                            
                             if start_square == end_square:
                                 pass  # No movement, do nothing
+
                             elif start_square and end_square and piece is not None and self.is_selected:
 
                                 is_legal = check_move(piece, start_square, end_square, self.board, self.turn)
 
                                 if is_legal:
-
                                     if self.should_change_turns:
                                         self.switch_turns()
-                                    capture = self.board[end_square]
-                                    self.move_piece(start_square, end_square)
-                                    self.last_selected_square = start_square
-                                    for key in self.highlight_board:
-                                        self.unhighlight(key)
-                                    self.unhighlight(start_square)
+
+                                    self.past_highlights = []
+                                    self.past_highlights.append(start_square)
+                                    self.past_highlights.append(end_square)
+
+                                    self.selected_highlights = []
+
+                                    self.move_piece(self.selected_square, end_square)
+
                                     self.is_selected = False
-                                    self.last_move_info = {"from": start_square,
-                                                           "to": end_square,
-                                                           "piece": piece.piece,
-                                                           'color': piece.color,
-                                                           "captured": capture.piece if capture else None,
-                                                           "notation": f"{start_square}-{end_square}"}
+                                    self.left_click_drag = False
+                                    self.last_move_info = {"from": self.selected_square,
+                                                            "to": end_square,
+                                                            "piece": self.selected_piece.piece,
+                                                            'color': self.selected_piece.color,
+                                                            "captured": piece.piece if piece else None,
+                                                            "notation": f"{self.selected_square}-{end_square}"}
                                     return 'move'
                                 
                             self.left_click_drag = False
+                            
                     elif event.button == 3:  # Right mouse button
 
 
                         self.right_click_drag = False
 
+        self.unhighlight_all()
+        self.highlight_selected()
+        print(self.selected_highlights)
         pygame.display.flip()
         pygame.time.Clock().tick(Display.FPS)
         
@@ -357,9 +396,17 @@ class Chessboard:
         self.highlight_board[position].fill((0, 0, 0))
         self.highlight_board[position].set_alpha(0)
 
+    def highlight_selected(self):
+        if self.selected_highlights:
+            for square in self.selected_highlights:
+                self.highlight(square, Highlight.SELECTED_COLOR, Highlight.SELECTED_ALPHA, Highlight.SELECT_TYPE)
+        if self.past_highlights:
+            for square in self.past_highlights:
+                self.highlight(square, Highlight.LAST_MOVE_COLOR, Highlight.LAST_MOVE_ALPHA, Highlight.SELECT_TYPE)
+                
     def unhighlight_all(self):
         for key in self.highlight_board:
-            self.highlight_board[key] = pygame.Surface((Display.SQUARE_SIZE, Display.SQUARE_SIZE))
+            self.unhighlight(key)
 
 class Piece:
     def __init__(self, color, position, piece_type, PIECE_IMAGES):
@@ -374,9 +421,11 @@ class Piece:
 
 run = True
 board = Chessboard()    
-board.set_theme('maple', 'anarcandy')
+board.set_theme('green', 'neo')
 while run:
     event = board.update()
 
     if event == 'quit':
         run = False
+
+
