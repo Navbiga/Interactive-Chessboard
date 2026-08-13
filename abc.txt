@@ -35,3 +35,8 @@ if mouse button up:
         disable left click drag
     elif right click:
         disable right click drag
+
+board.set_theme('green', 'neo')
+
+
+selection and king movement

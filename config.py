@@ -11,13 +11,13 @@ class Display:
 
 class Theme:
     # Note this is the preset you can change it directly with Chessboard.set_theme("marble", "anime") in your file
-    BOARD_STYLE = "wood3"
-    PIECE_SET = "Artemis"
+    BOARD_STYLE = "blue"
+    PIECE_SET = "cburnett"
 
 class Highlight:
     # The color of the selected square
-    SELECTED_COLOR = (246, 246, 105)
-    SELECTED_ALPHA = 160
+    SELECTED_COLOR = (20, 85, 30)
+    SELECTED_ALPHA = 128
     SELECT_TYPE = 'fill'
 
     # All legal move when you select a piece
@@ -26,8 +26,8 @@ class Highlight:
     MOVE_TYPE = 'dot'
 
 
-    LAST_MOVE_COLOR = (246, 246, 105)
-    LAST_MOVE_ALPHA = 160
+    LAST_MOVE_COLOR = (155, 199, 0)
+    LAST_MOVE_ALPHA = 105
     ENABLED = True
 
     RIGHT_CLICK_COLOR = (255, 0, 0)

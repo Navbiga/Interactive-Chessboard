@@ -1,7 +1,12 @@
 # This purely a functions/modeule file
 
 
-
+rook_a1_move = False
+rook_h1_move = False
+rook_a8_move = False
+rook_h8_move = False
+black_king_move = False
+white_king_move = False
 
 
 
@@ -223,8 +228,16 @@ def check_move(piece, square, target_square, board, turn, check_for_chess=True):
         row_diff = abs(int(square[1]) - int(target_square[1]))
         col_diff = abs(ord(square[0]) - ord(target_square[0]))
 
-        if row_diff <= 1 and col_diff <=1 and (row_diff > 0 or col_diff > 0):
-            geometric_move = True
+        if col_diff < 1 and row_diff < 1:
+            copy = board.copy()
+            copy[target_square] = board[square]
+            copy[square] = None
+            will_check = (turn, copy)
+                
+
+        
+
+
 
 
     # If it passed the geometricly acurate move it moves on to the king safety check

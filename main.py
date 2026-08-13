@@ -1,8 +1,4 @@
-# import all modules BEWARE SCALING ISSUES WITH OTHER OS THAN WINDOWS
-import sys
-if sys.platform == "win32":
-    import ctypes
-    ctypes.windll.shcore.SetProcessDpiAwareness(1)
+# import all modules
 import pygame
 from functions import *
 from config import Display, Theme, Highlight, GeneralConfig
@@ -300,8 +296,7 @@ class Chessboard:
 
                                 elif self.board[square] is not None:
                                     if piece == self.selected_piece:
-                                        self.selected_highlights = []
-                                        self.is_selected = False
+                                        self.left_click_drag = True
                                     else: 
                                         self.left_click_drag = True
                                         self.offset_x = 0
@@ -310,8 +305,7 @@ class Chessboard:
                                         self.selected_square = square
                                         self.selected_piece = self.board[square]
                                 else:
-                                    self.selected_highlights = []
-                                    self.is_selected = False
+                                    self.left_click_drag = True
 
 
                 # Handle mouse motion events for dragging pieces
@@ -335,16 +329,23 @@ class Chessboard:
                     end_pos = event.pos
                     start_square = get_clicked_square(start_pos[0], start_pos[1], self.square_size, self.positions)
                     end_square = get_clicked_square(end_pos[0], end_pos[1], self.square_size, self.positions)
-
+                    self.offset_piece_pos = None
+                    self.offset_x = 0
+                    self.offset_y = 0
 
                     # Left mouse button
                     if event.button == 1:  
 
                         if self.left_click_drag:
 
+                            self.left_click_drag = False
+
                             
                             if start_square == end_square:
-                                pass  # No movement, do nothing
+                                if self.is_selected:
+                                    self.selected_highlights = []
+                                    self.is_selected = False
+                                pass
 
                             elif start_square and end_square and piece is not None and self.is_selected:
 
@@ -372,7 +373,7 @@ class Chessboard:
                                                             "notation": f"{self.selected_square}-{end_square}"}
                                     return 'move'
                                 
-                            self.left_click_drag = False
+                            
                             
                     elif event.button == 3:  # Right mouse button
 
@@ -381,7 +382,6 @@ class Chessboard:
 
         self.unhighlight_all()
         self.highlight_selected()
-        print(self.selected_highlights)
         pygame.display.flip()
         pygame.time.Clock().tick(Display.FPS)
         
@@ -421,11 +421,11 @@ class Piece:
 
 run = True
 board = Chessboard()    
-board.set_theme('green', 'neo')
+
 while run:
     event = board.update()
-
     if event == 'quit':
         run = False
+    
 
 

@@ -5,3 +5,6 @@ my_resources/
 __pycache__/
 
 resources/pieces/neo
+
+# Just some kind of python x logic file for organizing atd you could say a whiteboard but in a file
+abc.txt
