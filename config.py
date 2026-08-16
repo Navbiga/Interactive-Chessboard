@@ -4,7 +4,7 @@
 class Display:
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 800
-    FULLSCREEN = False   # if you eneble this then the window will be in full screen the scrren widht and height doesnt matter
+    FULLSCREEN = True   # if you eneble this then the window will be in full screen the scrren widht and height doesnt matter
     BOARD_SIZE = 800
     SQUARE_SIZE = BOARD_SIZE / 8
     FPS = 144

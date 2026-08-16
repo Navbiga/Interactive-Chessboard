@@ -45,7 +45,10 @@ After you download the zip **unwrap it**, i belive you know how to do that *(if 
 
 ![Files](resources/examples/instalation/folder.png)
 
-
+You will also have to instal pygame-ce
+```
+pip install pygame-ce
+```
 After That create a new python file and import the main.py. and you will be using the library
 
 ![Import](resources/examples/instalation/import.png)

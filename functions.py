@@ -1,12 +1,12 @@
 # This purely a functions/modeule file
 
-
 rook_a1_move = False
 rook_h1_move = False
 rook_a8_move = False
 rook_h8_move = False
 black_king_move = False
 white_king_move = False
+
 
 
 
@@ -225,15 +225,28 @@ def check_move(piece, square, target_square, board, turn, check_for_chess=True):
 
     # And finaly the king    
     elif piece.piece == 'king':
-        row_diff = abs(int(square[1]) - int(target_square[1]))
-        col_diff = abs(ord(square[0]) - ord(target_square[0]))
+            row_diff = abs(int(square[1]) - int(target_square[1]))
+            col_diff = abs(ord(square[0]) - ord(target_square[0]))
 
-        if col_diff < 1 and row_diff < 1:
-            copy = board.copy()
-            copy[target_square] = board[square]
-            copy[square] = None
-            will_check = (turn, copy)
-                
+            if row_diff <= 1 and col_diff <= 1 and (row_diff > 0 or col_diff > 0):
+                opponent_king_near = False
+
+                for pos, opp_piece in board.items():
+                    if opp_piece is not None and opp_piece.piece == 'king' and opp_piece.color != turn:
+                        opp_row_diff = abs(int(target_square[1]) - int(pos[1]))
+                        opp_col_diff = abs(ord(target_square[0]) - ord(pos[0]))
+                        
+                        if opp_row_diff <= 1 and opp_col_diff <= 1:
+                            opponent_king_near = True
+                            break
+
+                if not opponent_king_near:
+                    geometric_move = True
+                    if turn == 'white':
+                        white_king_move = True
+                    else:
+                        black_king_move = True
+                    
 
         
 

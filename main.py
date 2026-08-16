@@ -342,9 +342,6 @@ class Chessboard:
 
                             
                             if start_square == end_square:
-                                if self.is_selected:
-                                    self.selected_highlights = []
-                                    self.is_selected = False
                                 pass
 
                             elif start_square and end_square and piece is not None and self.is_selected:
